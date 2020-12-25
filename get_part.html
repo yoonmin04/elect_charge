@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet"> 
+        <style>
+          body{
+              /*background-color: aqua;*/
+              z-index: 0;
+              font-size: 20px;
+              font-family: 'Jua', sans-serif;
+          }
+          input[type=number]{
+              border: 1px solid gray;
+              border-radius: 12px;
+              height: 1.5rem;
+              font-size: 100%;
+              padding: 0.7%;
+              font-family: 'Jua', sans-serif;
+          }
+          label{
+              cursor: pointer;
+          }
+          #main{
+              position: absolute;
+              right: 0;
+              left: 25%;
+              top: 25%;
+              width: 50%;
+              height: max-content;
+              padding: 50px;
+              border: 3px solid blue;
+              border-radius: 20px;
+              z-index: 3;
+              /*background-color: black;*/
+              color: black;
+          }
+          #f_b{
+              width: 20%;
+              height: inherit;
+              cursor: pointer;
+          }
+          #poll{
+              position: absolute;
+              width: 50%;
+              height: max-content;
+              left: 25%;
+              top: 25%;
+              padding: 50px;
+              z-index: 4;
+              background-color: white;
+              color: black;
+              border: 3px solid blue;
+              border-radius: 20px;
+          }
+          #poll .home{
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          #poll .amount{
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .poll{
+              border: 1px solid #0077ed;
+              border-radius: 20px;
+              background-color: #0077ed;
+              color: white;
+              display: block;
+              margin-left: auto;
+              margin-right: auto;
+              width: 30%;
+              height: 30%;
+              font-size: 40px;
+          }
+          .first{
+            border: 1px solid green;
+            border-radius: 8px;
+            width: fit-content;
+            padding: 3px;
+          }
+          .second{
+            border: 1px solid green;
+            border-radius: 8px;
+            width: fit-content;
+            padding: 3px;
+          }
+          #result{
+              color: red;
+              font-size: 1000%;
+              width: fit-content;
+              margin-left: auto;
+              margin-right: auto;
+          }
+        </style>
+        <script>
+          var elect_charge = {
+             price_house:[93.3, 187.9, 280.6],
+             price_apart:[78.3, 147.3, 215.6],
+             myhome: this.price_apart,
+             id_price: 0,
+             home: null,
+             total_period: 1,
+             kWh: 1,
+             final_charge: null,
+             set_property:function(){
+                 this.home = document.querySelector('input[name="home"]:checked').value
+                 var amount = document.querySelector('input[name="amount"]:checked').value;
+                 if(this.home == 'house'){
+                     this.myhome = this.price_house;
+                     if(amount == 'less'){
+                         this.id_price = 0;
+                     }else if(amount == 'middle'){
+                         this.id_price = 1;
+                     }else if(amount == 'over'){
+                         this.id_price = 2;
+                     }
+                 }else if(this.home == 'apart'){
+                    this.myhome = this.price_apart;
+                     if(amount == 'less'){
+                         this.id_price = 0;
+                     }else if(amount == 'middle'){
+                         this.id_price = 1;
+                     }else if(amount == 'over'){
+                         this.id_price = 2;
+                     } 
+                 }
+             
+             },
+             get_total_period:function(){
+                 var date_type = document.getElementById('set_period').value;
+                 var per_hour = document.getElementById('hour').value;
+                 var user_period = document.getElementById('period').value;
+                 var idate = 1;
+                 if(!user_period){
+                     user_period = 1;
+                 }
+                 switch(date_type){
+                     case 'y':
+                     idate = idate*user_period*365;
+                     break;
+                     case 'm':
+                     idate = idate*user_period*30;
+                     break;
+                     case 'd':
+                     idate = idate*user_period*1;
+                 }
+                 this.total_period = idate*per_hour;
+             },
+             get_kWh:function(){
+               var user_watt = document.getElementById('watt').value;
+               this.kWh = (user_watt * this.total_period)/1000;
+             },
+             get_per_price:function(){
+               this.final_charge = (this.myhome[this.id_price])*(this.kWh);
+             },
+             main:function(){
+                 this.set_property();
+                 this.get_total_period();
+                 this.get_kWh();
+                 this.get_per_price();
+                 var final_result = Math.floor(this.final_charge);
+                 document.querySelector('#result').innerHTML = final_result + "원";
+             }
+          }
+          function hide(){
+              document.querySelector('#poll').style.zIndex = -1;
+              document.querySelector('#poll').style.display = 'none';
+          }
+        </script>
+    </head>
+    <body>
+        <article>
+            <!--설문조사-->
+            <div id="poll">
+                <div class="home">
+                    <p><h2>당신의 주거형태를 고르시오</h2></p>
+                    <p><input type="radio" name="home" value="house" id="house"><label for="house">주택</label></p>
+                    <p><input type="radio" name="home" value="apart" id="apart"><label for="apart">아파트</label></p>
+                  </div>
+                  <div class="amount">
+                    <p><h2>당신은 전기를 많이 쓰시나요?</h2></p>
+                    <p><input type="radio" name="amount" value="less" id="less"><label for="less">적게 쓰는 편이다</p>
+                    <p><input type="radio" name="amount" value="middle" id="middle"><label for="middle">보통으로 쓴다</p>
+                    <p><input type="radio" name="amount" value="over" id="over"><label for="over">많이 쓰는 편이다</p>
+                  </div>
+                  <button class="poll" onclick="hide();">시작</button>
+            </div>
+            <!--메인-->
+            <div id="main">
+                <div class="first">
+                <input type="number" id="period" placeholder="총 사용기간" name="period">
+                <select name="set_period" id="set_period">
+                    <option value="d">일</option>
+                    <option value="m">달</option>
+                    <option value="y">년</option>
+                  </select>
+                  </div>
+                  <br>
+                  <div class="second">
+                  1일당 <input type="number" id="watt" placeholder="사용한 소비전력">
+                <select name="w/wh" id="w/wh">
+                  <option value="wh">Wh</option>
+                  <option value="w">W</option>
+                </select>
+                <input type="number" id="hour" placeholder="하루 당 사용시간">
+                시간씩 사용
+                </div>
+                <br>
+                <button class="poll" onclick="elect_charge.main();">Get</button>
+                <div id="result"></div>
+            </div>
+        </article>
+    </body>
+</html>
